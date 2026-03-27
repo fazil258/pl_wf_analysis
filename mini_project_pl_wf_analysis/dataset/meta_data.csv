@@ -1,0 +1,7 @@
+﻿file_name,sink_schema,table_name 
+accounts,raw,accounts
+company,raw,company
+departments,raw,departments
+employee,raw,employee
+general_ledgers,raw,general_ledgers
+payroll,raw,payroll

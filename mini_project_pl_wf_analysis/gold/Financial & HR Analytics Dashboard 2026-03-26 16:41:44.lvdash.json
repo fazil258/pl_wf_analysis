@@ -1,0 +1,1223 @@
+{
+  "datasets": [
+    {
+      "name": "37676754",
+      "displayName": "Monthly Consolidated Revenue",
+      "queryLines": [
+        "SELECT\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name,\n",
+        "  SUM(gl.credit_amount) as revenue\n",
+        "FROM\n",
+        "  bronze_catalog.raw.general_ledgers gl\n",
+        "    JOIN gold_catalog.mart.dim_account a\n",
+        "      ON gl.account_id = a.account_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON gl.company_id = c.company_id\n",
+        "WHERE\n",
+        "  a.pl_section = 'Revenue'\n",
+        "GROUP BY\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name"
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "e1ad36fd",
+      "displayName": "Cost of Sales by Month",
+      "queryLines": [
+        "SELECT\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name,\n",
+        "  ROUND(SUM(gl.debit_amount), 2) AS cost_of_sales\n",
+        "FROM\n",
+        "  bronze_catalog.raw.general_ledgers gl\n",
+        "    JOIN gold_catalog.mart.dim_account a\n",
+        "      ON gl.account_id = a.account_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON gl.company_id = c.company_id\n",
+        "WHERE\n",
+        "  a.pl_section = 'COGS'\n",
+        "GROUP BY\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name\n",
+        "ORDER BY\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name"
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "78ad4cce",
+      "displayName": "Gross Profit by Month",
+      "queryLines": [
+        "WITH revenue AS (\n",
+        "  SELECT\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(gl.credit_amount) as revenue_amount\n",
+        "  FROM\n",
+        "    bronze_catalog.raw.general_ledgers gl\n",
+        "      JOIN gold_catalog.mart.dim_account a\n",
+        "        ON gl.account_id = a.account_id\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON gl.company_id = c.company_id\n",
+        "  WHERE\n",
+        "    a.pl_section = 'Revenue'\n",
+        "  GROUP BY\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name\n",
+        "),\n",
+        "cogs AS (\n",
+        "  SELECT\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(gl.debit_amount) as cogs_amount\n",
+        "  FROM\n",
+        "    bronze_catalog.raw.general_ledgers gl\n",
+        "      JOIN gold_catalog.mart.dim_account a\n",
+        "        ON gl.account_id = a.account_id\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON gl.company_id = c.company_id\n",
+        "  WHERE\n",
+        "    a.pl_section = 'Cost of Sales'\n",
+        "  GROUP BY\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name\n",
+        ")\n",
+        "SELECT\n",
+        "  r.fiscal_year,\n",
+        "  r.fiscal_period,\n",
+        "  r.company_name,\n",
+        "  r.revenue_amount,\n",
+        "  COALESCE(c.cogs_amount, 0) as cogs_amount,\n",
+        "  r.revenue_amount - COALESCE(c.cogs_amount, 0) as gross_profit\n",
+        "FROM\n",
+        "  revenue r\n",
+        "    LEFT JOIN cogs c\n",
+        "      ON r.fiscal_year = c.fiscal_year\n",
+        "      AND r.fiscal_period = c.fiscal_period\n",
+        "      AND r.company_name = c.company_name"
+      ],
+      "columns": [
+        {
+          "displayName": "Gross Profit Margin %",
+          "description": "Profitability percentage after deducting cost of sales from revenue",
+          "expression": "(`gross_profit` / `revenue_amount`) * 100"
+        }
+      ],
+      "catalog": "workspace",
+      "schema": "default"
+    },
+    {
+      "name": "96b6ddc4",
+      "displayName": "Net Profit by Month",
+      "queryLines": [
+        "WITH revenue AS (\n",
+        "  SELECT\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(gl.credit_amount) as amount\n",
+        "  FROM\n",
+        "    bronze_catalog.raw.general_ledgers gl\n",
+        "      JOIN gold_catalog.mart.dim_account a\n",
+        "        ON gl.account_id = a.account_id\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON gl.company_id = c.company_id\n",
+        "  WHERE\n",
+        "    a.pl_section = 'Revenue'\n",
+        "  GROUP BY\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name\n",
+        "),\n",
+        "expenses AS (\n",
+        "  SELECT\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(gl.debit_amount) as amount\n",
+        "  FROM\n",
+        "    bronze_catalog.raw.general_ledgers gl\n",
+        "      JOIN gold_catalog.mart.dim_account a\n",
+        "        ON gl.account_id = a.account_id\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON gl.company_id = c.company_id\n",
+        "  WHERE\n",
+        "    a.pl_section IN ('Cost of Sales', 'Operating Expense')\n",
+        "  GROUP BY\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name\n",
+        ")\n",
+        "SELECT\n",
+        "  r.fiscal_year,\n",
+        "  r.fiscal_period,\n",
+        "  r.company_name,\n",
+        "  r.amount as revenue,\n",
+        "  COALESCE(e.amount, 0) as total_expenses,\n",
+        "  r.amount - COALESCE(e.amount, 0) as net_profit\n",
+        "FROM\n",
+        "  revenue r\n",
+        "    LEFT JOIN expenses e\n",
+        "      ON r.fiscal_year = e.fiscal_year\n",
+        "      AND r.fiscal_period = e.fiscal_period\n",
+        "      AND r.company_name = e.company_name"
+      ]
+    },
+    {
+      "name": "bea4049b",
+      "displayName": "Operating Expense Breakdown",
+      "queryLines": [
+        "SELECT\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name,\n",
+        "  a.opex_category,\n",
+        "  a.account_name,\n",
+        "  SUM(gl.debit_amount) as expense_amount\n",
+        "FROM\n",
+        "  bronze_catalog.raw.general_ledgers gl\n",
+        "    JOIN gold_catalog.mart.dim_account a\n",
+        "      ON gl.account_id = a.account_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON gl.company_id = c.company_id\n",
+        "WHERE\n",
+        "  a.pl_section = 'Operating Expense'\n",
+        "GROUP BY\n",
+        "  gl.fiscal_year,\n",
+        "  gl.fiscal_period,\n",
+        "  c.company_name,\n",
+        "  a.opex_category,\n",
+        "  a.account_name"
+      ]
+    },
+    {
+      "name": "cb7e58f0",
+      "displayName": "Average Compensation by Position",
+      "queryLines": [
+        "SELECT\n",
+        "  e.position,\n",
+        "  c.company_name,\n",
+        "  AVG(p.total_compensation) as avg_total_compensation,\n",
+        "  AVG(p.gross_salary) as avg_base_salary,\n",
+        "  AVG(p.bonus) as avg_bonus,\n",
+        "  AVG(p.overtime_pay) as avg_overtime,\n",
+        "  AVG(p.commission) as avg_commission,\n",
+        "  COUNT(DISTINCT e.employee_id) as employee_count\n",
+        "FROM\n",
+        "  gold_catalog.mart.fact_payroll p\n",
+        "    JOIN bronze_catalog.raw.employee e\n",
+        "      ON p.employee_id = e.employee_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON p.company_id = c.company_id\n",
+        "GROUP BY\n",
+        "  e.position,\n",
+        "  c.company_name"
+      ]
+    },
+    {
+      "name": "677f7707",
+      "displayName": "Overtime and Bonus Analysis",
+      "queryLines": [
+        "SELECT\n",
+        "  d.department_name,\n",
+        "  c.company_name,\n",
+        "  p.fiscal_year,\n",
+        "  p.fiscal_period,\n",
+        "  SUM(p.overtime_pay) as total_overtime,\n",
+        "  SUM(p.bonus) as total_bonus,\n",
+        "  SUM(p.gross_salary) as total_base_salary,\n",
+        "  COUNT(DISTINCT p.employee_id) as employee_count\n",
+        "FROM\n",
+        "  gold_catalog.mart.fact_payroll p\n",
+        "    JOIN gold_catalog.mart.dim_departments d\n",
+        "      ON p.department_id = d.department_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON p.company_id = c.company_id\n",
+        "GROUP BY\n",
+        "  d.department_name,\n",
+        "  c.company_name,\n",
+        "  p.fiscal_year,\n",
+        "  p.fiscal_period"
+      ],
+      "columns": [
+        {
+          "displayName": "Overtime to Base Ratio %",
+          "description": "Overtime pay as percentage of base salary showing variable compensation intensity",
+          "expression": "(`total_overtime` / `total_base_salary`) * 100"
+        }
+      ]
+    },
+    {
+      "name": "7e028749",
+      "displayName": "Cost per Department",
+      "queryLines": [
+        "SELECT\n",
+        "  d.department_name,\n",
+        "  c.company_name,\n",
+        "  p.fiscal_year,\n",
+        "  p.fiscal_period,\n",
+        "  SUM(p.total_compensation) as total_payroll_cost,\n",
+        "  COUNT(DISTINCT p.employee_id) as employee_count\n",
+        "FROM\n",
+        "  gold_catalog.mart.fact_payroll p\n",
+        "    JOIN gold_catalog.mart.dim_departments d\n",
+        "      ON p.department_id = d.department_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON p.company_id = c.company_id\n",
+        "GROUP BY\n",
+        "  d.department_name,\n",
+        "  c.company_name,\n",
+        "  p.fiscal_year,\n",
+        "  p.fiscal_period"
+      ]
+    },
+    {
+      "name": "c97b5486",
+      "displayName": "Headcount Distribution",
+      "queryLines": [
+        "SELECT\n",
+        "  d.department_name,\n",
+        "  c.company_name,\n",
+        "  COUNT(DISTINCT e.employee_id) as active_headcount\n",
+        "FROM\n",
+        "  bronze_catalog.raw.employee e\n",
+        "    JOIN gold_catalog.mart.dim_departments d\n",
+        "      ON e.department_id = d.department_id\n",
+        "    JOIN gold_catalog.mart.dim_company c\n",
+        "      ON e.company_id = c.company_id\n",
+        "WHERE\n",
+        "  e.is_active = true\n",
+        "GROUP BY\n",
+        "  d.department_name,\n",
+        "  c.company_name"
+      ]
+    },
+    {
+      "name": "dbaad6c6",
+      "displayName": "Payroll Cost as % of Revenue",
+      "queryLines": [
+        "WITH payroll_costs AS (\n",
+        "  SELECT\n",
+        "    p.fiscal_year,\n",
+        "    p.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(p.total_compensation) as total_payroll\n",
+        "  FROM\n",
+        "    gold_catalog.mart.fact_payroll p\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON p.company_id = c.company_id\n",
+        "  GROUP BY\n",
+        "    p.fiscal_year,\n",
+        "    p.fiscal_period,\n",
+        "    c.company_name\n",
+        "),\n",
+        "revenue AS (\n",
+        "  SELECT\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name,\n",
+        "    SUM(gl.credit_amount) as total_revenue\n",
+        "  FROM\n",
+        "    bronze_catalog.raw.general_ledgers gl\n",
+        "      JOIN gold_catalog.mart.dim_account a\n",
+        "        ON gl.account_id = a.account_id\n",
+        "      JOIN gold_catalog.mart.dim_company c\n",
+        "        ON gl.company_id = c.company_id\n",
+        "  WHERE\n",
+        "    a.pl_section = 'Revenue'\n",
+        "  GROUP BY\n",
+        "    gl.fiscal_year,\n",
+        "    gl.fiscal_period,\n",
+        "    c.company_name\n",
+        ")\n",
+        "SELECT\n",
+        "  p.fiscal_year,\n",
+        "  p.fiscal_period,\n",
+        "  p.company_name,\n",
+        "  p.total_payroll,\n",
+        "  r.total_revenue\n",
+        "FROM\n",
+        "  payroll_costs p\n",
+        "    JOIN revenue r\n",
+        "      ON p.fiscal_year = r.fiscal_year\n",
+        "      AND p.fiscal_period = r.fiscal_period\n",
+        "      AND p.company_name = r.company_name"
+      ],
+      "columns": [
+        {
+          "displayName": "Payroll as % of Revenue",
+          "description": "Labor efficiency ratio showing payroll costs as percentage of revenue",
+          "expression": "(`total_payroll` / `total_revenue`) * 100"
+        }
+      ]
+    },
+    {
+      "name": "1caf8a9d",
+      "displayName": "Monthly Revenue Insights from Consolidated Data",
+      "queryLines": [
+        "select * from gold_catalog.mart.kpi1_monthly_consolidated_revenue"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "35bc08a0",
+      "displayName": "pl_wf_analysis",
+      "layout": [
+        {
+          "widget": {
+            "name": "title_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Financial & HR Analytics Dashboard\n",
+                "\n",
+                "Comprehensive view of revenue, profitability, expenses, and workforce metrics across companies."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "revenue_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "37676754",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "fiscal_period",
+                      "expression": "`fiscal_period`"
+                    },
+                    {
+                      "name": "sum(revenue)",
+                      "expression": "SUM(`revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Monthly Consolidated Revenue",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fiscal_period",
+                  "displayName": "Fiscal Period",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(revenue)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Total Revenue",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "gross_profit_margin",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "78ad4cce",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "fiscal_period",
+                      "expression": "`fiscal_period`"
+                    },
+                    {
+                      "name": "Gross Profit Margin %",
+                      "expression": "`Gross Profit Margin %`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Monthly Gross Profit Margin",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fiscal_period",
+                  "displayName": "Fiscal Period",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Gross Profit Margin %",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "Gross Profit Margin %",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "net_profit",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "96b6ddc4",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "fiscal_period",
+                      "expression": "`fiscal_period`"
+                    },
+                    {
+                      "name": "sum(net_profit)",
+                      "expression": "SUM(`net_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Net Profit by Month",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fiscal_period",
+                  "displayName": "Fiscal Period",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(net_profit)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Net Profit",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "opex_breakdown",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bea4049b",
+                  "fields": [
+                    {
+                      "name": "opex_category",
+                      "expression": "`opex_category`"
+                    },
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "sum(expense_amount)",
+                      "expression": "SUM(`expense_amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Operating Expense Breakdown",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "company_name",
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(expense_amount)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Expense Amount",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "opex_category",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Expense Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cost_per_dept",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7e028749",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "department_name",
+                      "expression": "`department_name`"
+                    },
+                    {
+                      "name": "sum(total_payroll_cost)",
+                      "expression": "SUM(`total_payroll_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Cost per Department",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "department_name",
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_payroll_cost)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Total Payroll Cost",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 14,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_compensation",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "cb7e58f0",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "position",
+                      "expression": "`position`"
+                    },
+                    {
+                      "name": "avg_total_compensation",
+                      "expression": "`avg_total_compensation`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Average Compensation by Position",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "position",
+                  "displayName": "Position",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_total_compensation",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Avg Total Compensation",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "overtime_bonus",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "677f7707",
+                  "fields": [
+                    {
+                      "name": "department_name",
+                      "expression": "`department_name`"
+                    },
+                    {
+                      "name": "sum(total_overtime)",
+                      "expression": "SUM(`total_overtime`)"
+                    },
+                    {
+                      "name": "sum(total_bonus)",
+                      "expression": "SUM(`total_bonus`)"
+                    },
+                    {
+                      "name": "avg(Overtime to Base Ratio %)",
+                      "expression": "AVG(`Overtime to Base Ratio %`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Overtime and Bonus by Department",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "department_name",
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "sum(total_overtime)",
+                        "displayName": "Total Overtime"
+                      },
+                      {
+                        "fieldName": "sum(total_bonus)",
+                        "displayName": "Total Bonus"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "avg(Overtime to Base Ratio %)",
+                        "displayName": "Overtime Ratio %"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                },
+                "color": {
+                  "legend": {
+                    "position": "bottom"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 20,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "headcount",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c97b5486",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "department_name",
+                      "expression": "`department_name`"
+                    },
+                    {
+                      "name": "active_headcount",
+                      "expression": "`active_headcount`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Headcount Distribution by Department",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "department_name",
+                  "displayName": "Department",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "active_headcount",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "none"
+                  },
+                  "displayName": "Active Headcount",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 26,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "payroll_pct",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dbaad6c6",
+                  "fields": [
+                    {
+                      "name": "avg(Payroll as % of Revenue)",
+                      "expression": "AVG(`Payroll as % of Revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Payroll as % of Revenue",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(Payroll as % of Revenue)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "Payroll % of Revenue"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 26,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a8b500d1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e1ad36fd",
+                  "fields": [
+                    {
+                      "name": "company_name",
+                      "expression": "`company_name`"
+                    },
+                    {
+                      "name": "fiscal_period",
+                      "expression": "`fiscal_period`"
+                    },
+                    {
+                      "name": "sum(cost_of_sales)",
+                      "expression": "SUM(`cost_of_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Monthly Consolidated Revenue",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "fiscal_period",
+                  "displayName": "Company",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(cost_of_sales)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "company_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c07695f8",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1caf8a9d",
+                  "fields": [
+                    {
+                      "name": "fiscal_month_label",
+                      "expression": "`fiscal_month_label`"
+                    },
+                    {
+                      "name": "fiscal_period",
+                      "expression": "`fiscal_period`"
+                    },
+                    {
+                      "name": "sum(total_revenue)",
+                      "expression": "SUM(`total_revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "fiscal_period",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_revenue)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "fiscal_month_label",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 32,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "9241eaba",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

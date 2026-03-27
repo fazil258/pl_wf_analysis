@@ -1,0 +1,21 @@
+department_id,department_code,department_name,cost_center
+1,DEPT-001,Sales,CC-1001
+2,DEPT-002,Marketing,CC-1002
+3,DEPT-003,Finance,CC-1003
+4,DEPT-004,HR,CC-1004
+5,DEPT-005,IT,CC-1005
+6,DEPT-006,Operations,CC-1006
+7,DEPT-007,Customer Service,CC-1007
+8,DEPT-008,Legal,CC-1008
+9,DEPT-009,R&D,CC-1009
+10,DEPT-010,Procurement,CC-1010
+11,DEPT-011,Logistics,CC-1011
+12,DEPT-012,Quality Assurance,CC-1012
+13,DEPT-013,Production,CC-1013
+14,DEPT-014,Warehouse,CC-1014
+15,DEPT-015,Administration,CC-1015
+16,DEPT-016,Business Development,CC-1016
+17,DEPT-017,Compliance,CC-1017
+18,DEPT-018,Internal Audit,CC-1018
+19,DEPT-019,Strategy,CC-1019
+20,DEPT-020,Corporate Communications,CC-1020

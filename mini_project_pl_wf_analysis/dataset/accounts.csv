@@ -1,0 +1,158 @@
+account_id,account_code,account_name,account_type,category,is_active
+4000,ACC-4000,Sales Revenue - Products,Revenue,Operating Revenue,TRUE
+4010,ACC-4010,Sales Revenue - Services,Revenue,Operating Revenue,TRUE
+4020,ACC-4020,Sales Revenue - Consulting,Revenue,Operating Revenue,TRUE
+4030,ACC-4030,Sales Revenue - Subscriptions,Revenue,Operating Revenue,TRUE
+4040,ACC-4040,Sales Revenue - Licenses,Revenue,Operating Revenue,TRUE
+4100,ACC-4100,Service Revenue - Maintenance,Revenue,Operating Revenue,TRUE
+4110,ACC-4110,Service Revenue - Support,Revenue,Operating Revenue,TRUE
+4120,ACC-4120,Service Revenue - Training,Revenue,Operating Revenue,TRUE
+4200,ACC-4200,Other Operating Revenue,Revenue,Operating Revenue,TRUE
+4300,ACC-4300,Interest Income,Revenue,Financial Income,TRUE
+4310,ACC-4310,Dividend Income,Revenue,Financial Income,TRUE
+4320,ACC-4320,Investment Gains,Revenue,Financial Income,TRUE
+4400,ACC-4400,Foreign Exchange Gains,Revenue,Other Income,TRUE
+4410,ACC-4410,Rental Income,Revenue,Other Income,TRUE
+4420,ACC-4420,Commission Income,Revenue,Other Income,TRUE
+4500,ACC-4500,Sales Discounts,Contra Revenue,Operating Revenue,TRUE
+4510,ACC-4510,Sales Returns and Allowances,Contra Revenue,Operating Revenue,TRUE
+4520,ACC-4520,Bad Debt Recovery,Revenue,Operating Revenue,TRUE
+4600,ACC-4600,Gain on Asset Disposal,Revenue,Other Income,TRUE
+4700,ACC-4700,Grant Income,Revenue,Other Income,TRUE
+5000,ACC-5000,Cost of Goods Sold - Products,COGS,Direct Costs,TRUE
+5010,ACC-5010,Cost of Goods Sold - Materials,COGS,Direct Costs,TRUE
+5020,ACC-5020,Cost of Services Delivered,COGS,Direct Costs,TRUE
+5030,ACC-5030,Direct Labor Costs,COGS,Direct Costs,TRUE
+5040,ACC-5040,Manufacturing Overhead,COGS,Direct Costs,TRUE
+5050,ACC-5050,Freight and Shipping In,COGS,Direct Costs,TRUE
+5060,ACC-5060,Purchase Discounts,Contra COGS,Direct Costs,TRUE
+5070,ACC-5070,Purchase Returns,Contra COGS,Direct Costs,TRUE
+5100,ACC-5100,Subcontractor Costs,COGS,Direct Costs,TRUE
+5110,ACC-5110,Direct Materials - Raw,COGS,Direct Costs,TRUE
+5120,ACC-5120,Direct Materials - Components,COGS,Direct Costs,TRUE
+5130,ACC-5130,Work in Process,COGS,Direct Costs,TRUE
+5200,ACC-5200,Packaging Costs,COGS,Direct Costs,TRUE
+5210,ACC-5210,Quality Control Costs,COGS,Direct Costs,TRUE
+5220,ACC-5220,Warranty Costs,COGS,Direct Costs,TRUE
+5300,ACC-5300,Inventory Shrinkage,COGS,Direct Costs,TRUE
+5310,ACC-5310,Inventory Write-offs,COGS,Direct Costs,TRUE
+5400,ACC-5400,Royalty Costs,COGS,Direct Costs,TRUE
+5410,ACC-5410,License Costs,COGS,Direct Costs,TRUE
+5500,ACC-5500,Production Utilities,COGS,Direct Costs,TRUE
+5510,ACC-5510,Production Rent,COGS,Direct Costs,TRUE
+5600,ACC-5600,Depreciation - Production Equipment,COGS,Direct Costs,TRUE
+5700,ACC-5700,Amortization - Production,COGS,Direct Costs,TRUE
+5800,ACC-5800,Equipment Maintenance - Production,COGS,Direct Costs,TRUE
+5900,ACC-5900,Other Direct Costs,COGS,Direct Costs,TRUE
+6000,ACC-6000,Salaries and Wages,Expense,Operating Expense,TRUE
+6010,ACC-6010,Employee Benefits,Expense,Operating Expense,TRUE
+6020,ACC-6020,Payroll Taxes,Expense,Operating Expense,TRUE
+6030,ACC-6030,Pension Contributions,Expense,Operating Expense,TRUE
+6040,ACC-6040,Health Insurance,Expense,Operating Expense,TRUE
+6050,ACC-6050,Workers Compensation,Expense,Operating Expense,TRUE
+6060,ACC-6060,Training and Development,Expense,Operating Expense,TRUE
+6070,ACC-6070,Recruitment Expenses,Expense,Operating Expense,TRUE
+6100,ACC-6100,Rent Expense,Expense,Operating Expense,TRUE
+6110,ACC-6110,Utilities Expense,Expense,Operating Expense,TRUE
+6120,ACC-6120,Property Taxes,Expense,Operating Expense,TRUE
+6130,ACC-6130,Building Maintenance,Expense,Operating Expense,TRUE
+6140,ACC-6140,Insurance Expense,Expense,Operating Expense,TRUE
+6200,ACC-6200,Office Supplies,Expense,Operating Expense,TRUE
+6210,ACC-6210,Computer Equipment,Expense,Operating Expense,TRUE
+6220,ACC-6220,Software Licenses,Expense,Operating Expense,TRUE
+6230,ACC-6230,IT Support,Expense,Operating Expense,TRUE
+6300,ACC-6300,Marketing and Advertising,Expense,Operating Expense,TRUE
+6310,ACC-6310,Public Relations,Expense,Operating Expense,TRUE
+6320,ACC-6320,Trade Shows,Expense,Operating Expense,TRUE
+6400,ACC-6400,Travel Expenses,Expense,Operating Expense,TRUE
+6410,ACC-6410,Meals and Entertainment,Expense,Operating Expense,TRUE
+6420,ACC-6420,Vehicle Expenses,Expense,Operating Expense,TRUE
+6500,ACC-6500,Professional Fees - Legal,Expense,Operating Expense,TRUE
+6510,ACC-6510,Professional Fees - Consulting,Expense,Operating Expense,TRUE
+6520,ACC-6520,Professional Fees - Accounting,Expense,Operating Expense,TRUE
+6600,ACC-6600,Telephone and Internet,Expense,Operating Expense,TRUE
+6610,ACC-6610,Postage and Delivery,Expense,Operating Expense,TRUE
+6700,ACC-6700,Bank Charges,Expense,Financial Expense,TRUE
+6710,ACC-6710,Interest Expense,Expense,Financial Expense,TRUE
+6800,ACC-6800,Depreciation Expense,Expense,Operating Expense,TRUE
+6810,ACC-6810,Amortization Expense,Expense,Operating Expense,TRUE
+6900,ACC-6900,Bad Debt Expense,Expense,Operating Expense,TRUE
+6910,ACC-6910,Foreign Exchange Loss,Expense,Other Expense,TRUE
+6920,ACC-6920,Loss on Asset Disposal,Expense,Other Expense,TRUE
+6930,ACC-6930,Charitable Contributions,Expense,Operating Expense,TRUE
+6940,ACC-6940,Dues and Subscriptions,Expense,Operating Expense,TRUE
+7000,ACC-7000,Research and Development,Expense,Operating Expense,TRUE
+7100,ACC-7100,Taxes - Income Tax,Expense,Tax,TRUE
+7110,ACC-7110,Taxes - Other,Expense,Tax,TRUE
+1000,ACC-1000,Cash - Operating Account,Asset,Current Assets,TRUE
+1010,ACC-1010,Cash - Payroll Account,Asset,Current Assets,TRUE
+1020,ACC-1020,Cash - Petty Cash,Asset,Current Assets,TRUE
+1030,ACC-1030,Cash - Savings Account,Asset,Current Assets,TRUE
+1100,ACC-1100,Accounts Receivable,Asset,Current Assets,TRUE
+1110,ACC-1110,Allowance for Doubtful Accounts,Contra Asset,Current Assets,TRUE
+1120,ACC-1120,Notes Receivable - Short Term,Asset,Current Assets,TRUE
+1200,ACC-1200,Inventory - Raw Materials,Asset,Current Assets,TRUE
+1210,ACC-1210,Inventory - Work in Process,Asset,Current Assets,TRUE
+1220,ACC-1220,Inventory - Finished Goods,Asset,Current Assets,TRUE
+1230,ACC-1230,Inventory Reserve,Contra Asset,Current Assets,TRUE
+1300,ACC-1300,Prepaid Expenses,Asset,Current Assets,TRUE
+1310,ACC-1310,Prepaid Insurance,Asset,Current Assets,TRUE
+1320,ACC-1320,Prepaid Rent,Asset,Current Assets,TRUE
+1400,ACC-1400,Short-term Investments,Asset,Current Assets,TRUE
+1410,ACC-1410,Marketable Securities,Asset,Current Assets,TRUE
+1500,ACC-1500,Employee Advances,Asset,Current Assets,TRUE
+1510,ACC-1510,Deposits - Current,Asset,Current Assets,TRUE
+1600,ACC-1600,Other Current Assets,Asset,Current Assets,TRUE
+1700,ACC-1700,Land,Asset,Fixed Assets,TRUE
+1710,ACC-1710,Buildings,Asset,Fixed Assets,TRUE
+1720,ACC-1720,Accumulated Depreciation - Buildings,Contra Asset,Fixed Assets,TRUE
+1730,ACC-1730,Machinery and Equipment,Asset,Fixed Assets,TRUE
+1740,ACC-1740,Accumulated Depreciation - Machinery,Contra Asset,Fixed Assets,TRUE
+1750,ACC-1750,Furniture and Fixtures,Asset,Fixed Assets,TRUE
+1760,ACC-1760,Accumulated Depreciation - Furniture,Contra Asset,Fixed Assets,TRUE
+1770,ACC-1770,Vehicles,Asset,Fixed Assets,TRUE
+1780,ACC-1780,Accumulated Depreciation - Vehicles,Contra Asset,Fixed Assets,TRUE
+1790,ACC-1790,Computer Equipment,Asset,Fixed Assets,TRUE
+1800,ACC-1800,Accumulated Depreciation - Computers,Contra Asset,Fixed Assets,TRUE
+1810,ACC-1810,Leasehold Improvements,Asset,Fixed Assets,TRUE
+1820,ACC-1820,Accumulated Amortization - Leasehold,Contra Asset,Fixed Assets,TRUE
+1900,ACC-1900,Construction in Progress,Asset,Fixed Assets,TRUE
+1910,ACC-1910,Assets Held for Sale,Asset,Fixed Assets,TRUE
+2000,ACC-2000,Accounts Payable,Liability,Current Liabilities,TRUE
+2010,ACC-2010,Accounts Payable - Trade,Liability,Current Liabilities,TRUE
+2020,ACC-2020,Accounts Payable - Other,Liability,Current Liabilities,TRUE
+2100,ACC-2100,Accrued Expenses,Liability,Current Liabilities,TRUE
+2110,ACC-2110,Accrued Salaries,Liability,Current Liabilities,TRUE
+2120,ACC-2120,Accrued Payroll Taxes,Liability,Current Liabilities,TRUE
+2130,ACC-2130,Accrued Interest,Liability,Current Liabilities,TRUE
+2140,ACC-2140,Accrued Bonuses,Liability,Current Liabilities,TRUE
+2200,ACC-2200,Short-term Loans,Liability,Current Liabilities,TRUE
+2210,ACC-2210,Line of Credit,Liability,Current Liabilities,TRUE
+2220,ACC-2220,Current Portion - Long-term Debt,Liability,Current Liabilities,TRUE
+2300,ACC-2300,Sales Tax Payable,Liability,Current Liabilities,TRUE
+2310,ACC-2310,VAT Payable,Liability,Current Liabilities,TRUE
+2320,ACC-2320,Income Tax Payable,Liability,Current Liabilities,TRUE
+2330,ACC-2330,Withholding Tax Payable,Liability,Current Liabilities,TRUE
+2400,ACC-2400,Unearned Revenue,Liability,Current Liabilities,TRUE
+2410,ACC-2410,Customer Deposits,Liability,Current Liabilities,TRUE
+2420,ACC-2420,Deferred Revenue,Liability,Current Liabilities,TRUE
+2500,ACC-2500,Other Current Liabilities,Liability,Current Liabilities,TRUE
+2600,ACC-2600,Long-term Debt,Liability,Long-term Liabilities,TRUE
+2610,ACC-2610,Mortgage Payable,Liability,Long-term Liabilities,TRUE
+2620,ACC-2620,Notes Payable - Long Term,Liability,Long-term Liabilities,TRUE
+2630,ACC-2630,Bonds Payable,Liability,Long-term Liabilities,TRUE
+2700,ACC-2700,Deferred Tax Liability,Liability,Long-term Liabilities,TRUE
+2800,ACC-2800,Pension Liability,Liability,Long-term Liabilities,TRUE
+2810,ACC-2810,Other Post-employment Benefits,Liability,Long-term Liabilities,TRUE
+2900,ACC-2900,Other Long-term Liabilities,Liability,Long-term Liabilities,TRUE
+3000,ACC-3000,Common Stock,Equity,Equity,TRUE
+3010,ACC-3010,Preferred Stock,Equity,Equity,TRUE
+3100,ACC-3100,Additional Paid-in Capital,Equity,Equity,TRUE
+3200,ACC-3200,Retained Earnings,Equity,Equity,TRUE
+3210,ACC-3210,Retained Earnings - Prior Year,Equity,Equity,TRUE
+3220,ACC-3220,Current Year Earnings,Equity,Equity,TRUE
+3300,ACC-3300,Treasury Stock,Contra Equity,Equity,TRUE
+3400,ACC-3400,Dividends,Equity,Equity,TRUE
+3500,ACC-3500,Other Comprehensive Income,Equity,Equity,TRUE
+3510,ACC-3510,Foreign Currency Translation,Equity,Equity,TRUE
+3520,ACC-3520,Unrealized Gains/Losses,Equity,Equity,TRUE

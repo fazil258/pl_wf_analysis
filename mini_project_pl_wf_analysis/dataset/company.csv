@@ -1,0 +1,3 @@
+company_id,company_name,industry,country,established_date,is_active
+1,TechNova Industries,Technology,USA,15-03-2010,TRUE
+2,Nova AI,Technology,USA,20-11-2008,TRUE
