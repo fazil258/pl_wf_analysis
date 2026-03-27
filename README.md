@@ -164,6 +164,7 @@ CREATE SCHEMA IF NOT EXISTS bronze_catalog.clean;
 CREATE SCHEMA IF NOT EXISTS silver_catalog.transform;
 CREATE SCHEMA IF NOT EXISTS gold_catalog.mart;
 CREATE SCHEMA IF NOT EXISTS gold_catalog.curated;
+CREATE SCHEMA IF NOT EXISTS gold_catalog.cube;
 ```
 
 ### 3. Upload source data
